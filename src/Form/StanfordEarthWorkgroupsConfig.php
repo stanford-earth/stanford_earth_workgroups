@@ -2,13 +2,13 @@
 
 namespace Drupal\stanford_earth_workgroups\Form;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\stanford_earth_workgroups\Service\StanfordEarthWorkgroupsService;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /*
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\stanford_earth_workgroup_cache\EarthWorkgroups;
 use GuzzleHttp\ClientInterface;
 */
@@ -53,7 +53,7 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'stanford_earth_workgroup_service.adminsettings',
+      'stanford_earth_workgroups_service.adminsettings',
     ];
   }
 
@@ -68,27 +68,30 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('stanford_earth_workgroup.adminsettings');
+    $config = $this->config('stanford_earth_workgroups_service.adminsettings');
 
-    $form['stanford_earth_workgroup_cert'] = [
+    $form['stanford_earth_workgroups_cert'] = [
       '#type' => 'textfield',
       '#title' => $this->t('MAIS Certificate Path'),
       '#description' => $this->t('Location on server of the MAIS WG API cert.'),
-      '#default_value' => $config->get('stanford_earth_workgroup_cert'),
+      '#required' => true,
+      '#default_value' => $config->get('stanford_earth_workgroups_cert'),
     ];
 
-    $form['stanford_earth_workgroup_key'] = [
+    $form['stanford_earth_workgroups_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('MAIS Key Path'),
       '#description' => $this->t('Location on server of the MAIS WG API key.'),
-      '#default_value' => $config->get('stanford_earth_workgroup_key'),
+      '#required' => true,
+      '#default_value' => $config->get('stanford_earth_workgroups_key'),
     ];
 
-    $form['stanford_earth_workgroup_wgs'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Workgroups'),
-      '#description' => $this->t('Stanford Workgroups whose SUNetIDs to cache.'),
-      '#default_value' => $config->get('stanford_earth_workgroup_wgs'),
+    $form['stanford_earth_workgroups_test'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Test Workgroup'),
+      '#description' => $this->t('A Stanford Workgroup to test your cert and key.'),
+      '#required' => true,
+      '#default_value' => $config->get('stanford_earth_workgroups_test'),
     ];
 
     return parent::buildForm($form, $form_state);
@@ -99,27 +102,13 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
      */
     public function validateForm(array &$form, FormStateInterface $form_state) {
         parent::validateForm($form, $form_state);
-        $wgs = array_filter(explode(PHP_EOL, $form_state->getValue('stanford_earth_workgroup_wgs')));
-        $wgs = array_map('trim', $wgs);
-        if (empty($wgs)) {
-            $form_state->setErrorByName('', $this->t('No workgroups to check.'));
-            return;
-        }
-        // Check for empty lines and valid urls on listed events.
-        foreach ($wgs as $wg) {
-            if (empty($wg)) {
-                $form_state->setErrorByName('stanford_earth_workgroup_wgs', $this->t('Cannot have empty lines'));
-                return;
-            }
-        }
-
-        $wg = reset($wgs);
-        $wgObj = new EarthWorkgroups($this->httpClient);
-        $wg_found = $wgObj->getWorkgroupMembers($wg,
+        $wg = $form_state->getValue('stanford_earth_workgroups_test');
+        $wg_service = \Drupal::service('stanford_earth_workgroup_service.workgroup');
+        $wg_found = $wg_service->getMembers($wg,
             $form_state->getValue('stanford_earth_workgroup_cert'),
             $form_state->getValue('stanford_earth_workgroup_key'));
         if (empty($wg_found)) {
-            $form_state->setErrorByName('',
+            $form_state->setErrorByName('stanford_earth_workgroups_test',
                 'Unable to retrieve workgroup information.');
         }
     }
@@ -129,10 +118,10 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
-    $this->configFactory->getEditable('stanford_earth_workgroup.adminsettings')
-        ->set('stanford_earth_workgroup_wgs', $form_state->getValue('stanford_earth_workgroup_wgs'))
-      ->set('stanford_earth_workgroup_cert', $form_state->getValue('stanford_earth_workgroup_cert'))
-      ->set('stanford_earth_workgroup_key', $form_state->getValue('stanford_earth_workgroup_key'))
+    $this->configFactory->getEditable('stanford_earth_workgroups_service.adminsettings')
+      ->set('stanford_earth_workgroups_test', $form_state->getValue('stanford_earth_workgroups_test'))
+      ->set('stanford_earth_workgroups_cert', $form_state->getValue('stanford_earth_workgroups_cert'))
+      ->set('stanford_earth_workgroups_key', $form_state->getValue('stanford_earth_workgroups_key'))
       ->save();
   }
 

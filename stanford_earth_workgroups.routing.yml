@@ -1,0 +1,11 @@
+# configure the Stanford Earth Workgroups Services form
+stanford_earth_workgroups_service.config_settings_form:
+  # this will be a pick under admin/config/people
+  path: '/admin/config/people/workgroups'
+  # define where the form will be found and who can access it
+  defaults:  
+    _form: '\Drupal\stanford_earth_workgroups_service\Form\StanfordEarthWorkgroupsConfig'  
+    _title: 'Stanford Workgroups'
+  requirements:  
+    _permission: 'access administration pages'
+
