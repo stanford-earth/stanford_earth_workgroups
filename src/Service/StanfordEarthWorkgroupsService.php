@@ -28,6 +28,20 @@ class StanfordEarthWorkgroupsService {
     $this->config = $config->get('stanford_earth_workgroups_service.adminsettings');
   }
 
+  private function emailErrorToAdmin($status) {
+    /* @var $mailManager \Drupal\Core\Mail\MailManager */
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $mod = 'stanford_earth_workgroups';
+    $key = 'workgroup_error';
+    $lang = \Drupal::currentUser()->getPreferredLangcode();
+    $to = \Drupal::config('system.site')->get('mail');
+    $send = true;
+    $result = $mailManager->mail($mod, $key, $to, $lang, $status, NULL, $send);
+    if ($result['result'] !== true) {
+      \Drupal::logger('type')->error($status['message']);
+    }
+  }
+
   public function getMembers($wg, $certin = null, $keyin = null) {
     $status = ['workgroup' => $wg, 'member_count' => 0];
     try {
@@ -46,6 +60,7 @@ class StanfordEarthWorkgroupsService {
         $errmsg = 'Error getting workgroup ' . $wg . '. ' . $result->getReasonPhrase();
         \Drupal::logger('type')->error($errmsg);
         $status['message'] = $errmsg;
+        $this->emailErrorToAdmin($status);
         return ['members' => [], 'status' => $status];
       }
       $xml = simplexml_load_string($result->getBody());
@@ -78,6 +93,7 @@ class StanfordEarthWorkgroupsService {
         $status['message'] = 'okay';
       } else {
         $status['message'] = 'You may not use an empty workgroup.';
+        $this->emailErrorToAdmin($status);
       }
       return ['members' => $sunets, 'status' => $status];
     }
@@ -85,6 +101,7 @@ class StanfordEarthWorkgroupsService {
       $errmsg = 'Error getting workgroup ' . $wg . '. ' . $e->getMessage();
       \Drupal::logger('type')->error($errmsg);
       $status['message'] = $errmsg;
+      $this->emailErrorToAdmin($status);
       return ['members' => [], 'status' => $status];
     }
   }

@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Implements Drupal hooks for stanford_earth_workgroups module.
+ */
+
+/**
+ * Hook to format emailed error messages to site admin.
+ *
+ * @param string $key
+ *   The type of email being sent.
+ *
+ * @param array $message
+ *   The message array that can be modified by this hook.
+ *
+ * @param array $params
+ *   The parameter array whose contents can be used to format the message.
+ *
+ * @return void
+ *   No return value; can update the $message array.
+ */
+function stanford_earth_workgroups_mail($key, &$message, $params) {
+ switch ($key) {
+   case 'workgroup_error':
+     $message['from'] = \Drupal::config('system.site')->get('mail');
+     $message['subject'] = t('Workgroup API error: @title', array('@title' => $params['workgroup']));
+     $message['body'][] = $params['message'];
+     break;
+ }
+}
