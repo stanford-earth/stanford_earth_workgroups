@@ -6,12 +6,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\stanford_earth_workgroups\Service\StanfordEarthWorkgroupsService;
-
-/*
-use Drupal\stanford_earth_workgroup_cache\EarthWorkgroups;
-use GuzzleHttp\ClientInterface;
-*/
 
 /**
  * Contains Drupal\stanford_earth_workgroups\Form\StanfordEarthWorkgroupsConfig.
@@ -103,13 +97,13 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
     public function validateForm(array &$form, FormStateInterface $form_state) {
         parent::validateForm($form, $form_state);
         $wg = $form_state->getValue('stanford_earth_workgroups_test');
-        $wg_service = \Drupal::service('stanford_earth_workgroup_service.workgroup');
-        $wg_found = $wg_service->getMembers($wg,
-            $form_state->getValue('stanford_earth_workgroup_cert'),
-            $form_state->getValue('stanford_earth_workgroup_key'));
-        if (empty($wg_found)) {
+        $wg_service = \Drupal::service('stanford_earth_workgroups_service.workgroup');
+        $wg_data = $wg_service->getMembers($wg,
+            $form_state->getValue('stanford_earth_workgroups_cert'),
+            $form_state->getValue('stanford_earth_workgroups_key'));
+        if (empty($wg_data['status']['member_count'])) {
             $form_state->setErrorByName('stanford_earth_workgroups_test',
-                'Unable to retrieve workgroup information.');
+                $wg_data['status']['message']);
         }
     }
 
