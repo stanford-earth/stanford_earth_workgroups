@@ -1,0 +1,10 @@
+{
+  "name": "stanford-earth/stanford_earth_workgroups",
+  "description": "Drupal service returns workgroup members.",
+  "type": "stanford-module",
+  "homepage": "https://github.com/stanford-earth/stanford_earth_workgroups",
+  "authors": [],
+  "license": "GPL-2.0+",
+  "minimum-stability": "dev",
+  "require": {}
+}
