@@ -1,4 +1,5 @@
 services:
     stanford_earth_workgroups_service.workgroup:
         class: Drupal\stanford_earth_workgroups\Service\StanfordEarthWorkgroupsService
-        arguments: ['@http_client', '@config.factory']
+        arguments: ['@http_client', '@config.factory', '@logger.factory', '@plugin.manager.mail', '@current_user',
+          '@settings']

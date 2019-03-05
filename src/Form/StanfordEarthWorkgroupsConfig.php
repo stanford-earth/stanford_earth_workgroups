@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\stanford_earth_workgroups\Service\StanfordEarthWorkgroupsService;
 
 /**
  * Contains Drupal\stanford_earth_workgroups\Form\StanfordEarthWorkgroupsConfig.
@@ -20,16 +21,24 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
   protected $configFactory;
 
   /**
-   * StanfordEarthSamlForm constructor.
+   * The workgroup service.
+   *
+   * @var \Drupal\stanford_earth_workgroups\Service\StanfordEarthWorkgroupsService
+   */
+  protected $wgService;
+
+  /**
+   * StanfordEarthWorkgroupsConfig constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
    *   The ConfigFactory interface.
-     *
-     *   @param \GuzzleHttp\ClientInterface $http_client
-     *   The Guzzle HTTP client.
-     */
-  public function __construct(ConfigFactoryInterface $configFactory) {
+   * @param \Drupal\stanford_earth_workgroups\Service\StanfordEarthWorkgroupsService $wgService
+   *   The Workgroup service.
+   */
+  public function __construct(ConfigFactoryInterface $configFactory,
+    StanfordEarthWorkgroupsService $wgService) {
     $this->configFactory = $configFactory;
+    $this->wgService = $wgService;
     parent::__construct($configFactory);
   }
 
@@ -38,7 +47,8 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('stanford_earth_workgroups_service.workgroup')
     );
   }
 
@@ -68,7 +78,7 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('MAIS Certificate Path'),
       '#description' => $this->t('Location on server of the MAIS WG API cert.'),
-      '#required' => true,
+      '#required' => TRUE,
       '#default_value' => $config->get('stanford_earth_workgroups_cert'),
     ];
 
@@ -76,7 +86,7 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('MAIS Key Path'),
       '#description' => $this->t('Location on server of the MAIS WG API key.'),
-      '#required' => true,
+      '#required' => TRUE,
       '#default_value' => $config->get('stanford_earth_workgroups_key'),
     ];
 
@@ -84,28 +94,27 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Test Workgroup'),
       '#description' => $this->t('A Stanford Workgroup to test your cert and key.'),
-      '#required' => true,
+      '#required' => TRUE,
       '#default_value' => $config->get('stanford_earth_workgroups_test'),
     ];
 
     return parent::buildForm($form, $form_state);
   }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function validateForm(array &$form, FormStateInterface $form_state) {
-        parent::validateForm($form, $form_state);
-        $wg = $form_state->getValue('stanford_earth_workgroups_test');
-        $wg_service = \Drupal::service('stanford_earth_workgroups_service.workgroup');
-        $wg_data = $wg_service->getMembers($wg,
-            $form_state->getValue('stanford_earth_workgroups_cert'),
-            $form_state->getValue('stanford_earth_workgroups_key'));
-        if (empty($wg_data['status']['member_count'])) {
-            $form_state->setErrorByName('stanford_earth_workgroups_test',
-                $wg_data['status']['message']);
-        }
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+    $wg = $form_state->getValue('stanford_earth_workgroups_test');
+    $wg_data = $this->wgService->getMembers($wg,
+      $form_state->getValue('stanford_earth_workgroups_cert'),
+      $form_state->getValue('stanford_earth_workgroups_key'));
+    if (empty($wg_data['status']['member_count'])) {
+      $form_state->setErrorByName('stanford_earth_workgroups_test',
+        $wg_data['status']['message']);
     }
+  }
 
   /**
    * {@inheritdoc}
