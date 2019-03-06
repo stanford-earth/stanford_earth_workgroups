@@ -6,7 +6,6 @@ use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Mail\MailManager;
 use Drupal\Core\Session\AccountProxy;
-use Drupal\Core\Site\Settings;
 use GuzzleHttp\ClientInterface;
 
 /**
@@ -14,6 +13,11 @@ use GuzzleHttp\ClientInterface;
  */
 class StanfordEarthWorkgroupsService {
 
+  /**
+   * Global config object.
+   *
+   * @var \Drupal\Core\Config\ImmutableConfig
+   */
   protected $config;
 
   protected $httpClient;
@@ -42,7 +46,7 @@ class StanfordEarthWorkgroupsService {
   /**
    * Global site settings.
    *
-   * @var \Drupal\Core\Site|Settings
+   * @var \Drupal\Core\Config\ImmutableConfig
    */
   protected $settings;
 
@@ -59,21 +63,18 @@ class StanfordEarthWorkgroupsService {
    *   The mail manager service.
    * @param \Drupal\Core\Session\AccountProxy $curUser
    *   The current Drupal user.
-   * @param \Drupal\Core\Site|Settings $settings
-   *   The global site settings.
    */
   public function __construct(ClientInterface $http_client,
                               ConfigFactory $config = NULL,
                               LoggerChannelFactoryInterface $logger_factory,
                               MailManager $mailmgr,
-                              AccountProxy $curUser,
-                              Settings $settings) {
+                              AccountProxy $curUser) {
     $this->httpClient = $http_client;
     $this->config = $config->get('stanford_earth_workgroups_service.adminsettings');
     $this->logger = $logger_factory->get('system');
     $this->mailManager = $mailmgr;
     $this->currentUser = $curUser;
-    $this->settings = $settings;
+    $this->settings = $config->get('system.site');
   }
 
   /**

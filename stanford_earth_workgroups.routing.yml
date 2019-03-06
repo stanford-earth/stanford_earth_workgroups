@@ -7,4 +7,4 @@ stanford_earth_workgroups_service.config_settings_form:
     _form: '\Drupal\stanford_earth_workgroups\Form\StanfordEarthWorkgroupsConfig'  
     _title: 'Stanford Workgroups'
   requirements:  
-    _permission: 'access administration pages'
+    _permission: 'administer site configuration'
