@@ -1,6 +1,6 @@
-stanford_earth_workgroups_service.config:
+stanford_earth_workgroups.config:
   title: Stanford Workgroups Service Configuration
-  route_name: stanford_earth_workgroups_service.config_settings_form
+  route_name: stanford_earth_workgroups.config_settings_form
   parent: user.admin_index
   description: 'Configure Stanford Workgroups API access.'
   weight: 0

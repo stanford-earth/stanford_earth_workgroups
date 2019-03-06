@@ -48,7 +48,7 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('stanford_earth_workgroups_service.workgroup')
+      $container->get('stanford_earth_workgroups.workgroup')
     );
   }
 
@@ -57,7 +57,7 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'stanford_earth_workgroups_service.adminsettings',
+      'stanford_earth_workgroups.adminsettings',
     ];
   }
 
@@ -72,7 +72,7 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('stanford_earth_workgroups_service.adminsettings');
+    $config = $this->config('stanford_earth_workgroups.adminsettings');
 
     $form['stanford_earth_workgroups_cert'] = [
       '#type' => 'textfield',
@@ -121,7 +121,7 @@ class StanfordEarthWorkgroupsConfig extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
-    $this->configFactory->getEditable('stanford_earth_workgroups_service.adminsettings')
+    $this->configFactory->getEditable('stanford_earth_workgroups.adminsettings')
       ->set('stanford_earth_workgroups_test', $form_state->getValue('stanford_earth_workgroups_test'))
       ->set('stanford_earth_workgroups_cert', $form_state->getValue('stanford_earth_workgroups_cert'))
       ->set('stanford_earth_workgroups_key', $form_state->getValue('stanford_earth_workgroups_key'))

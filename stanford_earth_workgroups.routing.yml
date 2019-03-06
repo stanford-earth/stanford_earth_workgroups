@@ -1,5 +1,5 @@
 # configure the Stanford Earth Workgroups Services form
-stanford_earth_workgroups_service.config_settings_form:
+stanford_earth_workgroups.config_settings_form:
   # this will be a pick under admin/config/people
   path: '/admin/config/people/workgroups'
   # define where the form will be found and who can access it

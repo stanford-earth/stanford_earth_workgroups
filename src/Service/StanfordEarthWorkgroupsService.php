@@ -70,7 +70,7 @@ class StanfordEarthWorkgroupsService {
                               MailManager $mailmgr,
                               AccountProxy $curUser) {
     $this->httpClient = $http_client;
-    $this->config = $config->get('stanford_earth_workgroups_service.adminsettings');
+    $this->config = $config->get('stanford_earth_workgroups.adminsettings');
     $this->logger = $logger_factory->get('system');
     $this->mailManager = $mailmgr;
     $this->currentUser = $curUser;
