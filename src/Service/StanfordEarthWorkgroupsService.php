@@ -152,7 +152,10 @@ class StanfordEarthWorkgroupsService {
           if (is_array($workgroups)) {
             foreach ($workgroups as $next_wg) {
               $nested = (string) $next_wg->attributes()->$id_attribute;
-              $sunets = array_merge($sunets, $this->getMembers($nested, $cert, $key));
+              $subsunets = $this->getMembers($nested, $cert, $key);
+              if ($subsunets['status']['member_count'] > 0) {
+                $sunets = array_merge($sunets, $subsunets['members']);
+              }
             }
           }
         }
