@@ -84,15 +84,18 @@ class StanfordEarthWorkgroupsService {
    *   The request status including an error message.
    */
   private function emailErrorToAdmin(array $status) {
+    /*
     $mod = 'stanford_earth_workgroups';
     $key = 'workgroup_error';
     $lang = $this->currentUser->getPreferredLangcode();
     $to = $this->settings->get('mail');
     $send = TRUE;
-    $result = $this->mailManager->mail($mod, $key, $to, $lang, $status, NULL, $send);
+    $result = $this->mailManager->mail($mod, $key, $to, $lang, $status,
+    NULL, $send);
     if ($result['result'] !== TRUE) {
-      $this->logger->error($status['message']);
+    $this->logger->error($status['message']);
     }
+     */
   }
 
   /**
