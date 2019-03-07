@@ -125,6 +125,14 @@ class StanfordEarthWorkgroupsService {
         $cert = $this->config->get('stanford_earth_workgroups_cert');
       }
 
+      if (empty($key) || empty($cert)) {
+        $errmsg = 'Error getting workgroup ' . $wg .
+          '. Workgroup API credentials have not been set.';
+        $this->logger->notice($errmsg);
+        $status['message'] = $errmsg;
+        return ['members' => [], 'status' => $status];
+      }
+
       $result = $this->httpClient->request('GET',
         'https://workgroupsvc.stanford.edu/v1/workgroups/' . $wg,
         ['cert' => $cert, 'ssl_key' => $key]);
