@@ -8,3 +8,10 @@ stanford_earth_workgroups.config_settings_form:
     _title: 'Stanford Workgroups'
   requirements:  
     _permission: 'administer site configuration'
+stanford_earth_workgroups.test:
+  path: '/workgroup_test' 
+  defaults: 
+    _controller: '\Drupal\stanford_earth_workgroups\Controller\StanfordEarthWorkgroupsController::content' 
+    _title: 'Workgroup Members'
+  requirements: 
+    _permission: 'access content' 
